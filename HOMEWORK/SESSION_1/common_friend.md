@@ -1,0 +1,1 @@
+select user_id, user_name from users where user_id in (select friend_id from friends where user_id= ( select user_id from users where user_name='Hans' ) and friend_id in (select friend_id from friends where user_id= (select user_id from users where user_name='Karl')));

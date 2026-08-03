@@ -1,0 +1,22 @@
+
+WITH recent_txn AS (
+    SELECT
+        user_id,
+        MAX(transaction_date) AS transaction_date
+    FROM user_transactions
+    GROUP BY user_id
+)
+
+SELECT
+    r.transaction_date,
+    r.user_id,
+    COUNT(*) AS purchase_count
+FROM recent_txn r
+JOIN user_transactions u
+    ON r.user_id = u.user_id
+   AND r.transaction_date = u.transaction_date
+GROUP BY
+    r.transaction_date,
+    r.user_id
+ORDER BY
+    r.transaction_date;

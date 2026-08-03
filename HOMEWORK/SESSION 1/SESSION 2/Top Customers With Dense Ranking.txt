@@ -1,0 +1,23 @@
+
+SOLUTION:
+WITH customer_totals AS (
+    SELECT
+        customer_id,
+        SUM(total_purchase_value) AS total_purchase_value
+    FROM customer_purchase
+    GROUP BY customer_id
+),
+ranked AS (
+    SELECT
+        customer_id,
+        total_purchase_value,
+        DENSE_RANK() OVER (ORDER BY total_purchase_value DESC) AS rank
+    FROM customer_totals
+)
+SELECT
+    customer_id,
+    total_purchase_value,
+    rank
+FROM ranked
+WHERE rank <= 5
+ORDER BY rank, customer_id;

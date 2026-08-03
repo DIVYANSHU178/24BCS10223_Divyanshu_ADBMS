@@ -1,0 +1,1 @@
+Foreign key is a field in one table that refers to the primary key of another table.

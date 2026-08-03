@@ -1,0 +1,24 @@
+
+WITH dept_avg AS (
+    SELECT
+        department,
+        ROUND(AVG(salary), 0) AS avg_salary
+    FROM employee_o
+    WHERE id <> manager_id
+    GROUP BY department
+)
+
+SELECT
+    e.department,
+    e.id,
+    e.salary,
+    m.salary AS manager_salary,
+    d.avg_salary
+FROM employee_o e
+JOIN employee_o m
+    ON e.manager_id = m.id
+JOIN dept_avg d
+    ON e.department = d.department
+ORDER BY
+    e.department,
+    e.salary DESC;

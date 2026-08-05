@@ -1,0 +1,38 @@
+
+WITH weeks AS (
+    SELECT DISTINCT
+        contact_id,
+        DATE_TRUNC('week', event_date)::date AS week_start
+    FROM marketing_touches
+),
+
+streaks AS (
+    SELECT
+        contact_id,
+        week_start,
+        week_start - (ROW_NUMBER() OVER (
+            PARTITION BY contact_id
+            ORDER BY week_start
+        ) * INTERVAL '1 week') AS grp
+    FROM weeks
+),
+
+valid_streak AS (
+    SELECT contact_id
+    FROM streaks
+    GROUP BY contact_id, grp
+    HAVING COUNT(*) >= 3
+),
+
+trial AS (
+    SELECT DISTINCT contact_id
+    FROM marketing_touches
+    WHERE event_type = 'trial_request'
+)
+
+SELECT c.email
+FROM crm_contacts c
+JOIN valid_streak v
+    ON c.contact_id = v.contact_id
+JOIN trial t
+    ON c.contact_id = t.contact_id;

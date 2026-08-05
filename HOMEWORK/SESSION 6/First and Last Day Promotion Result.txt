@@ -1,0 +1,19 @@
+SELECT
+    p.promotion_id,
+    100.0 * SUM(
+        CASE
+            WHEN o.date_sold = p.start_date THEN 1
+            ELSE 0
+        END
+    ) / COUNT(*) AS first_day_percentage,
+
+    100.0 * SUM(
+        CASE
+            WHEN o.date_sold = p.end_date THEN 1
+            ELSE 0
+        END
+    ) / COUNT(*) AS last_day_percentage
+FROM online_sales_promotions p
+JOIN online_orders o
+ON p.promotion_id = o.promotion_id
+GROUP BY p.promotion_id;

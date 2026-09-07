@@ -19,7 +19,7 @@ INSERT INTO employees (emp_id, emp_name, emp_salary, emp_city) VALUES
 SELECT * FROM EMPLOYEES
 
 
-CREATE VIEW EMP_KRG AS
+CREATE OR REPLACE VIEW EMP_KRG AS
 SELECT emp_id,emp_name,emp_salary FROM employees
 WHERE emp_id=101
 

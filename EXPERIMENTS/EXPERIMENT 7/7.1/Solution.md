@@ -1,0 +1,49 @@
+
+CREATE TABLE EMPLOYEE (
+    EMP_ID NUMBER PRIMARY KEY,
+    SALARY NUMBER(10, 2)
+);
+
+
+INSERT INTO EMPLOYEE (EMP_ID, SALARY) VALUES (101, 50000);
+INSERT INTO EMPLOYEE (EMP_ID, SALARY) VALUES (102, 0);
+INSERT INTO EMPLOYEE (EMP_ID, SALARY) VALUES (103, 75000);
+
+
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+    CURSOR emp_cursor IS 
+        SELECT EMP_ID, SALARY FROM EMPLOYEE;
+
+    V_EMP_ID    EMPLOYEE.EMP_ID%TYPE;
+    V_SALARY    EMPLOYEE.SALARY%TYPE;
+    SALARY_ZERO EXCEPTION;
+BEGIN
+    OPEN emp_cursor;
+    FETCH emp_cursor INTO V_EMP_ID, V_SALARY;
+
+    WHILE emp_cursor%FOUND LOOP
+        IF V_SALARY = 0 THEN
+            RAISE SALARY_ZERO;
+        END IF;
+
+        UPDATE EMPLOYEE
+        SET SALARY = V_SALARY * 1.10
+        WHERE EMP_ID = V_EMP_ID;
+
+        FETCH emp_cursor INTO V_EMP_ID, V_SALARY;
+    END LOOP;
+
+    CLOSE emp_cursor;
+    COMMIT;
+
+EXCEPTION
+    WHEN SALARY_ZERO THEN
+        DBMS_OUTPUT.PUT_LINE('Salary is zero. Increment not possible.');
+        IF emp_cursor%ISOPEN THEN
+            CLOSE emp_cursor;
+        END IF;
+END;
+/

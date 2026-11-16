@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Leaderboard - Online Examination System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-glow: rgba(79, 70, 229, 0.3);
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-400: #94a3b8;
+            --slate-200: #e2e8f0;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --gold: #fbbf24;
+            --silver: #cbd5e1;
+            --bronze: #d97706;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 12% 15%, rgba(99, 102, 241, 0.14) 0%, transparent 40%),
+                        radial-gradient(circle at 88% 85%, rgba(79, 70, 229, 0.16) 0%, transparent 45%),
+                        #0b0f19;
+            color: #f8fafc;
+            padding: 1.5rem;
+        }
+
+        .navbar {
+            max-width: 1100px;
+            margin: 0 auto 2rem;
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1rem 1.6rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-badge {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b0f19;
+            box-shadow: 0 6px 16px -3px rgba(251, 191, 36, 0.4);
+        }
+
+        .nav-title h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .nav-title span {
+            font-size: 0.8rem;
+            color: var(--slate-400);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-nav {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #cbd5e1;
+            background: transparent;
+        }
+        .btn-nav:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 1.8rem;
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.4s ease forwards;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.6rem;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .controls-header h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select {
+            padding: 8px 12px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.85rem;
+            outline: none;
+            cursor: pointer;
+        }
+        select option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .btn-refresh {
+            padding: 8px 14px;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-refresh:hover {
+            background: rgba(99, 102, 241, 0.35);
+            color: #ffffff;
+        }
+
+        /* Leaderboard Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        thead th {
+            padding: 10px 16px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--slate-400);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: left;
+            border: none;
+        }
+
+        tbody tr {
+            background: rgba(15, 23, 42, 0.5);
+            transition: all 0.2s ease;
+            border-radius: 10px;
+        }
+        tbody tr:hover {
+            background: rgba(30, 41, 59, 0.8);
+            transform: scale(1.008);
+            box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.3);
+        }
+
+        tbody td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        tbody td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+        tbody td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        /* Rank Medals */
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+        .rank-1 {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            color: #0b0f19;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.35);
+        }
+        .rank-2 {
+            background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+            color: #0b0f19;
+            box-shadow: 0 4px 12px rgba(203, 213, 225, 0.3);
+        }
+        .rank-3 {
+            background: linear-gradient(135deg, #b45309, #78350f);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(180, 83, 9, 0.3);
+        }
+        .rank-other {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--slate-400);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .student-name-cell {
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar-initial {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .score-bar-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-track {
+            width: 90px;
+            height: 6px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 9999px;
+            background: #10b981;
+        }
+
+        .badge-status {
+            padding: 3px 10px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .status-passed {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .status-failed {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3.5rem 1rem;
+            color: var(--slate-400);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="brand-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+            </div>
+            <div class="nav-title">
+                <h2>Hall of Fame Leaderboard</h2>
+                <span>Real-Time Window Analytics &bull; SQL RANK()</span>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <a href="login.html" class="btn-nav" id="backLink">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Portal Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="glass-card">
+            <div class="controls-header">
+                <h3>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
+                        <circle cx="12" cy="8" r="7"/>
+                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+                    </svg>
+                    Merit Standings
+                </h3>
+
+                <div class="filter-controls">
+                    <select id="examFilterSelect" onchange="loadLeaderboard()">
+                        <option value="ALL">All Examinations (Global)</option>
+                    </select>
+
+                    <button class="btn-refresh" onclick="loadLeaderboard()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23 4 23 10 17 10"/>
+                            <polyline points="1 20 1 14 7 14"/>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;">Rank</th>
+                            <th>Candidate</th>
+                            <th>Examination</th>
+                            <th>Score</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="emptyDisplay" class="empty-state" style="display:none;">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:12px; color:var(--slate-500);">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                <h4>No Examination Records Found</h4>
+                <p>Complete assessments to populate the live rankings.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:8080/api";
+        const user = JSON.parse(localStorage.getItem("examUser"));
+        if (user) {
+            const backLink = document.getElementById("backLink");
+            if (user.role === "teacher" || user.role === "admin") {
+                backLink.href = "teacher-dashboard.html";
+                backLink.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Faculty Dashboard`;
+            } else {
+                backLink.href = "student-exam.html";
+                backLink.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Student Exam Hall`;
+            }
+        }
+
+        window.onload = async () => {
+            await loadExamsFilter();
+            await loadLeaderboard();
+        };
+
+        async function loadExamsFilter() {
+            try {
+                const res = await fetch(`${API}/exams`);
+                const data = await res.json();
+                if (data.success && data.exams) {
+                    const sel = document.getElementById("examFilterSelect");
+                    data.exams.forEach(ex => {
+                        const opt = document.createElement("option");
+                        opt.value = ex.exam_id;
+                        opt.textContent = `${ex.title} (${ex.subject_name || 'General'})`;
+                        sel.appendChild(opt);
+                    });
+                }
+            } catch (err) {}
+        }
+
+        async function loadLeaderboard() {
+            const examVal = document.getElementById("examFilterSelect").value;
+            let url = `${API}/leaderboard`;
+            if (examVal !== "ALL") {
+                url += `?exam_id=${examVal}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                const tbody = document.getElementById("leaderboardBody");
+                const empty = document.getElementById("emptyDisplay");
+                tbody.innerHTML = "";
+
+                const list = data.leaderboard || [];
+
+                if (list.length === 0) {
+                    empty.style.display = "block";
+                    return;
+                }
+                empty.style.display = "none";
+
+                list.forEach(row => {
+                    const rank = row.rank_position || 1;
+                    let rankHtml = `<span class="rank-badge rank-other">${rank}</span>`;
+                    if (rank === 1) rankHtml = `<span class="rank-badge rank-1">🥇1</span>`;
+                    else if (rank === 2) rankHtml = `<span class="rank-badge rank-2">🥈2</span>`;
+                    else if (rank === 3) rankHtml = `<span class="rank-badge rank-3">🥉3</span>`;
+
+                    const initials = (row.name || "Student").substring(0, 2).toUpperCase();
+                    const score = Number(row.score).toFixed(2);
+                    const total = Number(row.total_marks);
+                    const pct = total > 0 ? Math.max(0, Math.min(100, Math.round((score / total) * 100))) : 0;
+                    const passed = row.passed;
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>${rankHtml}</td>
+                        <td>
+                            <div class="student-name-cell">
+                                <div class="avatar-initial">${initials}</div>
+                                <div>
+                                    <div>${row.name}</div>
+                                    ${row.email ? `<div style="font-size:0.75rem; color:var(--slate-400);">${row.email}</div>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td>${row.exam_title || 'Exam'}</td>
+                        <td>
+                            <div class="score-bar-wrapper">
+                                <strong>${score}</strong>
+                                <span style="font-size:0.8rem; color:var(--slate-400);">/ ${total}</span>
+                                <div class="score-track">
+                                    <div class="score-fill" style="width: ${pct}%; background: ${passed ? '#10b981' : '#ef4444'};"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge-status ${passed ? 'status-passed' : 'status-failed'}">
+                                ${passed ? 'PASSED' : 'FAILED'}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Failed to load leaderboard", err);
+            }
+        }
+    </script>
+</body>
+</html>
